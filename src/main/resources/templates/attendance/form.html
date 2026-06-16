@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title th:text="${attendance.id != null} ? 'Edit Attendance' : 'Mark Attendance'">Attendance</title>
+
+    <!-- Bootstrap (local) -->
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}"/>
+
+    <!-- Puritan font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Puritan:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        html,body {
+            margin:0;
+            padding:0;
+            height:100%;
+            font-family:"Puritan", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background:#fff;
+            color:#111;
+            box-sizing:border-box;
+        }
+        *, *::before, *::after { box-sizing:inherit; }
+
+        /* page wrapper matches other pages */
+        .page-wrap { padding: 84px 150px; box-sizing: border-box; }
+
+        /* centered form shell with border and smaller width */
+        .form-shell {
+            max-width: 420px;        /* narrower than before */
+            margin: 22px auto;
+            padding: 20px 22px;
+            background: #fff;
+            border: 2px solid #000;    /* subtle border around the box */
+            border-radius: 10px;
+            box-shadow: none;
+        }
+
+        h3.page-title {
+            margin: 0 0 14px 0;
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        /* label on its own line (list pattern) */
+        .field {
+            margin-bottom: 14px;
+        }
+        .field-label {
+            display:block;
+            margin-bottom:8px;
+            font-weight:600;
+        }
+
+        /* inputs matching site style */
+        .form-control, .form-select {
+            width:100%;
+            padding: .5rem .65rem;
+            border-radius: 8px;
+            border: 1px solid #d6d6d6;
+            background: #fff;
+            outline: none;
+            font-size: 0.96rem;
+            box-shadow: none;
+            box-sizing: border-box;
+        }
+        .form-control:focus, .form-select:focus { border-color:#999; }
+
+        /* date row layout: label + input aligned */
+        .date-row {
+            display:flex;
+            gap:12px;
+            align-items:center;
+            flex-wrap:wrap;
+        }
+        .date-row .date-input { flex:1 1 260px; min-width:160px; }
+        /* hide the duplicated Save (it was removed) so nothing unexpected */
+
+        /* actions at bottom */
+        .actions {
+            margin-top:18px;
+            display:flex;
+            gap:12px;
+            align-items:center;
+        }
+
+        .action-btn {
+            display:inline-block;
+            background:#fff;
+            color:#111;
+            border:2px solid #111;
+            border-radius:8px;
+            padding:.375rem .7rem;
+            font-weight:600;
+            text-decoration:none;
+            font-size:0.92rem;
+            line-height:1;
+            cursor:pointer;
+        }
+        .action-btn:hover { background:#111; color:#fff; text-decoration:none; }
+
+        .action-btn-primary {
+            background:#111;
+            color:#fff;
+            border:2px solid #111;
+        }
+        .action-btn-primary:hover { background:#000; }
+
+        @media (max-width: 768px) {
+            .page-wrap { padding-left:24px; padding-right:24px; }
+            .form-shell { margin:14px auto; padding:14px; }
+            .date-row { flex-direction:column; align-items:flex-start; }
+            .date-row .date-input { width:100%; }
+            .actions { flex-direction:row; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- header (unchanged) -->
+<div th:replace="fragments/header :: header"></div>
+
+<div class="page-wrap">
+    <div class="form-shell">
+        <h3 class="page-title" th:text="${attendance.id != null} ? 'Edit Attendance' : 'Mark Attendance'">Mark Attendance</h3>
+
+        <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+        <form th:action="${attendance.id != null} ? @{/attendance/update} : @{/attendance}" method="post">
+            <input type="hidden" name="id" th:value="${attendance.id}"/>
+
+            <div class="field">
+                <label class="field-label">Employee</label>
+                <select name="employeeId" class="form-select" required>
+                    <option th:each="e : ${employees}" th:value="${e.id}"
+                            th:text="${e.name}" th:selected="${attendance.employeeId == e.id}">Employee</option>
+                </select>
+            </div>
+
+            <div class="field">
+                <label class="field-label">Date</label>
+                <div class="date-row">
+                    <input name="date" type="date" class="form-control date-input" required
+                           th:value="${attendance.date != null} ? ${attendance.date} : ${#dates.format(#dates.createNow(), 'yyyy-MM-dd')}"/>
+                    <!-- removed the inline Save button here per request -->
+                </div>
+            </div>
+
+            <div class="field">
+                <label class="field-label">Status</label>
+                <select name="status" class="form-select">
+                    <option th:each="s : ${statuses}" th:value="${s}" th:text="${s}" th:selected="${attendance.status == s}">present</option>
+                </select>
+            </div>
+
+            <div class="field">
+                <label class="field-label">Reason (optional)</label>
+                <input name="reason" class="form-control" th:value="${attendance.reason}"/>
+            </div>
+
+            <div class="actions">
+                <a class="action-btn" th:href="@{/attendance}">Cancel</a>
+                <button type="submit" class="action-btn action-btn-primary"
+                        th:text="${attendance.id != null} ? 'Update' : 'Save'">Save</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+</body>
+</html>

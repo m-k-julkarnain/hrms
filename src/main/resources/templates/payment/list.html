@@ -1,0 +1,330 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8"/>
+    <title>Payments — HRMS</title>
+
+    <!-- Bootstrap (your local file) -->
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}"/>
+
+    <!-- Puritan font (matches your other pages) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Puritan:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* page + font reset */
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: "Puritan", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: #fff;
+            color: #111;
+            box-sizing: border-box;
+        }
+        *, *::before, *::after { box-sizing: inherit; }
+
+        /* page wrapper padding (matches attendance page) */
+        .page-wrap { padding: 24px 150px; box-sizing: border-box; }
+
+        /* header row */
+        .top-row { display:flex; justify-content:space-between; align-items:center; gap:16px; margin:14px 0 12px; }
+        .page-title { margin:0; font-size:24px; font-weight:700; letter-spacing:0.3px; }
+
+        /* action buttons (white with black border) */
+        .action-btn {
+            display:inline-block;
+            background: #fff;
+            color: #111;
+            border: 2px solid #111;
+            border-radius: 8px;
+            padding: .375rem .7rem;
+            font-weight:600;
+            text-decoration:none;
+            font-size:0.92rem;
+            line-height:1;
+            cursor:pointer;
+        }
+        .action-btn:hover { background:#111; color:#fff; text-decoration:none; }
+        .action-btn-sm { padding:.25rem .5rem; font-size:0.88rem; border-radius:8px; }
+
+        /* Search panel (vertical layout requested) */
+        .search-panel { width:100%; max-width:1100px; margin-top:12px; margin-bottom:18px; }
+        .sp-row { margin-bottom:12px; }
+        .label { display:block; font-weight:600; margin-bottom:6px; }
+        .input-wide {
+            width:100%;
+            padding:.6rem .75rem;
+            border-radius:10px;
+            border:1.5px solid #111;
+            font-size:0.95rem;
+            outline:none;
+            box-sizing:border-box;
+            background:#fff;
+        }
+
+        .dates-row { display:flex; gap:18px; align-items:flex-start; }
+        .date-input {
+            padding:.55rem .65rem;
+            border-radius:10px;
+            border:1.5px solid #111;
+            font-size:0.95rem;
+            box-shadow:none;
+            outline:none;
+            background:#fff;
+            box-sizing:border-box;
+            width:100%;
+        }
+
+        .search-button {
+            margin-top:14px;
+            width:140px;
+            padding:.5rem .9rem;
+            border-radius:8px;
+            border:2px solid #111;
+            background:#fff;
+            font-weight:700;
+            cursor:pointer;
+        }
+        .search-button:hover { background:#111; color:#fff; }
+
+        /* table area */
+        .table-container { overflow-x:auto; padding-top:12px; }
+
+        .emp-table {
+            width:100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            table-layout: fixed;
+            font-size: 1.04rem;
+        }
+
+        /* Header: single border rectangle with 8px radius */
+        .emp-table thead th {
+            background: #fff;
+            padding: 12px 12px;
+            font-weight:700;
+            text-align: left;
+            border:none;
+            vertical-align: middle;
+            box-sizing: border-box;
+        }
+        .emp-table thead th {
+            border-top: 2px solid #000;
+            border-bottom: 2px solid #000;
+        }
+        .emp-table thead th:first-child {
+            border-left: 2px solid #000;
+            border-top-left-radius: 8px;
+            border-bottom-left-radius: 8px;
+        }
+        .emp-table thead th:last-child {
+            border-right: 2px solid #000;
+            border-top-right-radius: 8px;
+            border-bottom-right-radius: 8px;
+        }
+
+        /* small spacer under header row */
+        .emp-table thead + tbody .header-spacer td {
+            height: 8px;
+            padding: 0;
+            background: transparent;
+            border: none;
+        }
+
+        /* Data rows: alternating bands */
+        .emp-table tbody tr.row-odd td { background:#ffffff; }
+        .emp-table tbody tr.row-even td { background:#f5f5f5; }
+        /* Fix column widths inside emp-table */
+.emp-table th:nth-child(1),
+.emp-table td:nth-child(1) {
+    width: 60px;    /* ID */
+}
+
+.emp-table th:nth-child(2),
+.emp-table td:nth-child(2) {
+    width: 180px;   /* Employee */
+}
+
+.emp-table th:nth-child(3),
+.emp-table td:nth-child(3) {
+    width: 150px;   /* Amount */
+}
+
+.emp-table th:nth-child(4),
+.emp-table td:nth-child(4) {
+    width: 180px;   /* Payment Date */
+}
+
+.emp-table th:nth-child(5),
+.emp-table td:nth-child(5) {
+    width: 140px;   /* Method */
+}
+
+.emp-table th:nth-child(6),
+.emp-table td:nth-child(6) {
+    width: 140px;   /* Remarks */
+}
+
+.emp-table th:nth-child(7),
+.emp-table td:nth-child(7) {
+    width: 90px;    /* Paid By */
+}
+
+.emp-table th:nth-child(8),
+.emp-table td:nth-child(8) {
+    width: 140px;   /* Actions */
+}
+
+
+        .emp-table tbody td {
+            padding:13px 12px;
+            vertical-align: middle;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            border: none;
+            font-size:1.04rem;
+            box-sizing:border-box;
+        }
+
+        .emp-table td.actions { width:1%; white-space:nowrap; }
+
+        .table-action-btn {
+            display:inline-block;
+            background:#fff;
+            border:2px solid #111;
+            color:#111;
+            border-radius:8px;
+            padding:.28rem .5rem;
+            font-weight:600;
+            font-size:0.88rem;
+            text-decoration:none;
+            cursor:pointer;
+            line-height:1;
+        }
+        .table-action-btn:hover { background:#111; color:#fff; }
+
+        .emp-table tbody tr:hover td { filter: brightness(0.995); }
+
+        /* responsive tweaks */
+        @media (max-width: 1100px) {
+            .page-wrap { padding-left:40px; padding-right:40px; }
+        }
+        @media (max-width: 768px) {
+            .page-wrap { padding-left:24px; padding-right:24px; }
+            .top-row { flex-direction:column; align-items:flex-start; gap:12px; }
+            .emp-table thead { display:none; }
+            .emp-table, .emp-table tbody, .emp-table tr, .emp-table td { display:block; width:100%; }
+            .emp-table tr { margin-bottom:10px; }
+            .emp-table td { white-space:normal; padding:10px; }
+            .emp-table td.actions { text-align:left; }
+            .dates-row { flex-direction:column; gap:10px; }
+            .search-button { width:100%; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- header fragment (unchanged) -->
+<div th:replace="fragments/header :: header"></div>
+
+<div class="page-wrap">
+
+    <div class="top-row">
+        <div>
+            <h3 class="page-title">Payments</h3>
+
+            <!-- SEARCH PANEL: Employee IDs full width, then start/end side-by-side, search button below -->
+            <form th:action="@{/payments/search}" method="get" class="search-panel" role="search" aria-label="Payment search">
+                <!-- Employee IDs -->
+                <div class="sp-row">
+                    <label class="label" for="employeeIds">Employee IDs (Comma separated)</label>
+                    <input id="employeeIds" name="employeeIds" type="text" class="input-wide" placeholder="e.g. 1,2,3" th:value="${employeeIds}" />
+                </div>
+
+                <!-- start & end date side by side -->
+                <div class="sp-row dates-row">
+                    <div style="flex:1;">
+                        <label class="label" for="startDate">Start Date</label>
+                        <input id="startDate" name="startDate" type="date" class="date-input" th:value="${startDate}" />
+                    </div>
+
+                    <div style="flex:1;">
+                        <label class="label" for="endDate">End Date</label>
+                        <input id="endDate" name="endDate" type="date" class="date-input" th:value="${endDate}" />
+                    </div>
+                </div>
+
+                <!-- Search button below -->
+                <div>
+                    <button type="submit" class="search-button">Search</button>
+                </div>
+            </form>
+
+        </div>
+
+        <!-- After Search button -->
+        <div style="margin-bottom: 200px; display:flex; gap:12px; flex-wrap: wrap;">
+            <a class="action-btn" th:href="@{/payments/new}">New Payment</a>
+            <a class="action-btn" th:href="@{|/payments/export/excel?employeeIds=${employeeIds}&startDate=${startDate}&endDate=${endDate}|}">Export Excel</a>
+            <a class="action-btn" th:href="@{|/payments/export/pdf?employeeIds=${employeeIds}&startDate=${startDate}&endDate=${endDate}|}">Export PDF</a>
+        </div>
+
+    </div>
+
+    <div class="table-container">
+        <table class="emp-table" role="table" aria-label="Payments">
+            <thead>
+            <tr>
+                <th style="width:48px">ID</th>
+                <th>Employee</th>
+                <th style="width:120px">Amount</th>
+                <th style="width:170px">Payment Date</th>
+                <th style="width:120px">Method</th>
+                <th style="width:140px">Remarks</th>
+                <th style="width:90px">Paid By</th>
+                <th style="width:140px">Actions</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <!-- spacer -->
+            <tr class="header-spacer"><td colspan="8"></td></tr>
+
+            <tr th:each="p,iterStat : ${payments}" th:class="${iterStat.index % 2 == 0} ? 'row-odd' : 'row-even'">
+                <td th:text="${p.id}">1</td>
+                <td th:text="${employeeNames[p.employeeId]}">Employee Name</td>
+                <td th:text="${p.amount}">1000.00</td>
+
+                <!-- safe date output via conditional elements to avoid inline expression parsing issues -->
+                <td>
+                    <span th:if="${p.paymentDate != null}" th:text="${#temporals.format(p.paymentDate,'yyyy-MM-dd HH:mm')}"></span>
+                </td>
+
+                <td th:text="${p.method}">Bank Transfer</td>
+                <td th:text="${p.remarks}">Notes</td>
+                <td th:text="${p.paidBy}">1</td>
+
+                <td class="actions">
+                    <a th:href="@{|/payments/edit/${p.id}|}" class="table-action-btn">Edit</a>
+
+                    <form th:action="@{|/payments/delete/${p.id}|}" method="post" th:onsubmit="return confirm('Delete this payment?');" style="display:inline">
+                        <button class="table-action-btn" type="submit" style="margin-left:8px">Delete</button>
+                    </form>
+                </td>
+            </tr>
+
+            <tr th:if="${#lists.isEmpty(payments)}">
+                <td colspan="8" style="padding:18px; text-align:center; color:#666;">No payments found.</td>
+            </tr>
+
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,199 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8"/>
+    <title th:text="${payment.id != null} ? 'Edit Payment' : 'New Payment'">Payment</title>
+
+    <!-- Bootstrap (local) -->
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}"/>
+
+    <!-- Puritan font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Puritan:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* Page + font */
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: "Puritan", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: #fff;
+            color: #111;
+            box-sizing: border-box;
+        }
+        *, *::before, *::after { box-sizing: inherit; }
+
+        /* Keep header nav intact and remove any top gap */
+        nav.navbar { margin-top: 0; }
+
+        /* Page wrapper with left/right padding */
+        .page-wrap { padding: 24px 60px; }
+
+        /* Centered form card */
+        .form-card {
+            max-width: 760px;
+            margin: 28px auto;
+            padding: 26px 28px;
+            background: #ffffff;
+            border-radius: 10px;
+            border: 2px solid #000;
+        }
+
+        h3.page-heading {
+            margin: 0 0 18px 0;
+            font-size: 26px;
+            font-weight: 700;
+            letter-spacing: 0.2px;
+        }
+
+        /* Form controls layout */
+        .form-row {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .form-group {
+            width: 100%;
+            margin-bottom: 14px;
+        }
+
+        /* For two-column layout on larger screens */
+        .col-half { width: calc(50% - 8px); }
+        @media (max-width: 768px) {
+            .col-half { width: 100%; }
+            .page-wrap { padding-left: 24px; padding-right: 24px; }
+            .form-card { padding: 18px; }
+        }
+
+        label.form-label {
+            display:block;
+            margin-bottom:6px;
+            font-weight:600;
+            color:#111;
+            font-size:0.95rem;
+        }
+
+        input.form-control, select.form-control, textarea.form-control {
+            width:100%;
+            padding: .55rem .65rem;
+            border-radius:8px;
+            border:1px solid #d6d6d6;
+            font-size:0.95rem;
+            outline:none;
+            background:#fff;
+        }
+        input.form-control:focus, select.form-control:focus, textarea.form-control:focus {
+            border-color: #999;
+            box-shadow: none;
+        }
+
+        /* Primary field that should be full width for employee select when needed */
+        .full-width { width:100%; }
+
+        /* Buttons (same look as other pages) */
+        .action-btn {
+            display:inline-block;
+            background: #fff;
+            color: #111;
+            border: 2px solid #111;
+            border-radius: 8px;
+            padding: .45rem .75rem;
+            font-weight:600;
+            text-decoration:none;
+            font-size:0.95rem;
+            line-height:1;
+            cursor:pointer;
+        }
+        .action-btn:hover { background:#111; color:#fff; text-decoration:none; }
+
+        .btn-row {
+            display:flex;
+            gap:12px;
+            margin-top:16px;
+            align-items:center;
+        }
+
+        /* Help / subtle note */
+        .form-note {
+            color: #666;
+            font-size: 0.92rem;
+            margin-top: 10px;
+        }
+
+        /* make small helper text inline if needed */
+        .small-note { font-size:0.9rem; color:#666; margin-top:6px; }
+
+    </style>
+</head>
+<body>
+
+<!-- header fragment (unchanged) -->
+<div th:replace="fragments/header :: header"></div>
+
+<div class="page-wrap">
+    <div class="form-card" role="form" aria-labelledby="payment-heading">
+        <h3 id="payment-heading" class="page-heading"
+            th:text="${payment.id != null} ? 'Edit Payment' : 'New Payment'">New Payment</h3>
+
+        <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+        <!-- Single template: Show create or edit form depending on payment.id -->
+        <form th:action="${payment.id != null} ? @{/payments/update} : @{/payments}" method="post" novalidate>
+            <input type="hidden" name="id" th:value="${payment.id}"/>
+
+            <!-- Employee select (full width) -->
+            <div class="form-row">
+                <div class="form-group full-width">
+                    <label class="form-label" for="employeeId">Employee <span style="color:#111;font-weight:600">*</span></label>
+                    <select id="employeeId" name="employeeId" class="form-control" required>
+                        <option th:if="${payment == null or payment.id == null}" value="" disabled selected>Select employee</option>
+                        <option th:each="e : ${employees}"
+                                th:value="${e.id}"
+                                th:text="${e.name}"
+                                th:selected="${payment != null and payment.employeeId == e.id}">Employee</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Amount and Method on one row -->
+            <div class="form-row" style="margin-top:6px;">
+                <div class="form-group col-half">
+                    <label class="form-label" for="amount">Amount <span style="color:#111;font-weight:600">*</span></label>
+                    <input id="amount" name="amount" type="text" class="form-control"
+                           th:value="${payment != null} ? ${payment.amount} : ''" placeholder="e.g. 1000.00" required/>
+                </div>
+
+                <div class="form-group col-half">
+                    <label class="form-label" for="method">Method</label>
+                    <select id="method" name="method" class="form-control">
+                        <option th:each="m : ${methods}" th:value="${m}" th:text="${m}" th:selected="${payment != null and payment.method == m}">Method</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Remarks -->
+            <div class="form-row" style="margin-top:6px;">
+                <div class="form-group full-width">
+                    <label class="form-label" for="remarks">Remarks</label>
+                    <input id="remarks" name="remarks" class="form-control" th:value="${payment != null} ? ${payment.remarks} : ''"/>
+                </div>
+            </div>
+
+            <!-- Buttons row -->
+            <div class="btn-row" style="justify-content:flex-start;">
+                <button type="submit" class="action-btn"
+                        th:text="${payment.id != null} ? 'Update' : 'Save'">Save</button>
+
+                <a class="action-btn" th:href="@{/payments}">Cancel</a>
+            </div>
+
+            <p class="form-note" th:if="${payment.id == null}">Fill required fields and click Save to add a new payment.</p>
+        </form>
+    </div>
+</div>
+
+</body>
+</html>

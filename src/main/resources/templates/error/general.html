@@ -1,0 +1,16 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Error</title>
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+</head>
+<body>
+<div class="container mt-5">
+    <h3 class="text-danger" th:text="${error}">Unexpected Error</h3>
+    <p><strong>Details:</strong> <span th:text="${message}"></span></p>
+    <p><strong>Path:</strong> <span th:text="${path}"></span></p>
+
+    <a class="btn btn-primary mt-3" href="/">Home</a>
+</div>
+</body>
+</html>

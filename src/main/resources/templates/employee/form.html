@@ -1,0 +1,194 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8"/>
+    <title>Employee Form</title>
+
+    <!-- Bootstrap (local) -->
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}"/>
+
+    <!-- Puritan font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Puritan:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* Page + font */
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: "Puritan", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: #fff;
+            color: #111;
+            box-sizing: border-box;
+        }
+        *, *::before, *::after { box-sizing: inherit; }
+
+        /* Keep header nav intact and remove any top gap */
+        nav.navbar { margin-top: 0; }
+
+        /* Page wrapper with 60px left/right padding (matches site) */
+        .page-wrap { padding: 24px 60px; }
+
+        /* Centered form card */
+        .form-card {
+            max-width: 760px;
+            margin: 28px auto;
+            padding: 26px 28px;
+            background: #ffffff;
+            border-radius: 10px;
+            border: 2px solid #000;
+        }
+
+        h3.page-heading {
+            margin: 0 0 18px 0;
+            font-size: 26px;
+            font-weight: 700;
+            letter-spacing: 0.2px;
+        }
+
+        /* Form controls */
+        .form-row {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .form-group {
+            width: 100%;
+            margin-bottom: 14px;
+        }
+
+        /* For two-column layout on larger screens */
+        .col-half { width: calc(50% - 8px); }
+        @media (max-width: 768px) {
+            .col-half { width: 100%; }
+            .page-wrap { padding-left: 24px; padding-right: 24px; }
+        }
+
+        label.form-label {
+            display:block;
+            margin-bottom:6px;
+            font-weight:600;
+            color:#111;
+            font-size:0.95rem;
+        }
+
+        input.form-control, select.form-control, textarea.form-control {
+            width:100%;
+            padding: .55rem .65rem;
+            border-radius:8px;
+            border:1px solid #d6d6d6;
+            font-size:0.95rem;
+            outline:none;
+            background:#fff;
+        }
+        input.form-control:focus, select.form-control:focus, textarea.form-control:focus {
+            border-color: #999;
+            box-shadow: none;
+        }
+
+        /* Buttons (same look as other pages) */
+        .action-btn {
+            display:inline-block;
+            background: #fff;
+            color: #111;
+            border: 2px solid #111;
+            border-radius: 8px;
+            padding: .45rem .75rem;
+            font-weight:600;
+            text-decoration:none;
+            font-size:0.95rem;
+            line-height:1;
+            cursor:pointer;
+        }
+        .action-btn:hover { background:#111; color:#fff; text-decoration:none; }
+
+        .btn-row {
+            display:flex;
+            gap:12px;
+            margin-top:12px;
+            align-items:center;
+        }
+
+        /* Help / subtle note */
+        .form-note {
+            color: #666;
+            font-size: 0.92rem;
+            margin-top: 6px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- header fragment (unchanged) -->
+<div th:replace="fragments/header :: header"></div>
+
+<div class="page-wrap">
+    <div class="form-card" role="form" aria-labelledby="employee-heading">
+        <h3 id="employee-heading" class="page-heading"
+            th:text="${employee.id != null} ? 'Edit Employee' : 'New Employee'">Employee</h3>
+
+        <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+        <form th:action="${employee.id != null} ? @{/employees/update} : @{/employees}" method="post" novalidate>
+            <input type="hidden" name="id" th:value="${employee.id}"/>
+
+            <div class="form-row">
+                <div class="form-group col-half">
+                    <label class="form-label" for="empCode">Code</label>
+                    <input id="empCode" name="empCode" class="form-control" th:value="${employee.empCode}"/>
+                </div>
+
+                <div class="form-group col-half">
+                    <label class="form-label" for="name">Name <span style="color:#111;font-weight:600">*</span></label>
+                    <input id="name" name="name" class="form-control" th:value="${employee.name}" required/>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-half">
+                    <label class="form-label" for="email">Email</label>
+                    <input id="email" name="email" type="email" class="form-control" th:value="${employee.email}"/>
+                </div>
+
+                <div class="form-group col-half">
+                    <label class="form-label" for="phone">Phone</label>
+                    <input id="phone" name="phone" class="form-control" th:value="${employee.phone}"/>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-half">
+                    <label class="form-label" for="position">Position</label>
+                    <input id="position" name="position" class="form-control" th:value="${employee.position}"/>
+                </div>
+
+                <div class="form-group col-half">
+                    <label class="form-label" for="hireDate">Hire Date</label>
+                    <input id="hireDate" name="hireDate" type="date" class="form-control" th:value="${employee.hireDate}"/>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group" style="width:220px;">
+                    <label class="form-label" for="salary">Salary</label>
+                    <input id="salary" name="salary" type="text" class="form-control" th:value="${employee.salary}"/>
+                </div>
+            </div>
+
+            <div class="btn-row">
+                <button type="submit" class="action-btn"
+                        th:text="${employee.id != null} ? 'Update' : 'Save'">Save</button>
+
+                <a class="action-btn" th:href="@{/employees}">Cancel</a>
+            </div>
+
+            <p class="form-note" th:if="${employee.id == null}">Fill required fields and click Save to add a new employee.</p>
+        </form>
+    </div>
+</div>
+
+</body>
+</html>

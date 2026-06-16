@@ -1,0 +1,168 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8"/>
+    <title th:text="${candidate.id != null} ? 'Edit Candidate' : 'Add Candidate Manually'">Candidate</title>
+
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}"/>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Puritan:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        html, body {
+            margin:0; padding:0; height:100%;
+            font-family:"Puritan", system-ui, Arial, sans-serif;
+            background:#fff; color:#111; box-sizing:border-box;
+        }
+        *, *::before, *::after { box-sizing:inherit; }
+
+        .page-wrap { padding:24px 450px; }
+        .page-title { margin:0 0 12px; font-size:24px; font-weight:700; }
+
+        .form-card {
+            background:#fff;
+            padding:22px;
+            border-radius:10px;
+            border:2px solid #000;
+        }
+
+        .form-row { display:flex; gap:16px; align-items:center; flex-wrap:wrap; margin-bottom:12px; }
+        .form-col { flex:1 1 260px; min-width:180px; }
+
+        label { display:block; font-weight:600; margin-bottom:6px; }
+
+        .text-input, .select-input {
+            width:100%;
+            padding:.45rem .6rem;
+            border-radius:8px;
+            border:1px solid #d6d6d6;
+            font-size:0.95rem;
+            outline:none;
+        }
+
+        .action-btn {
+            background:#fff;
+            border:2px solid #111;
+            border-radius:8px;
+            padding:.375rem .7rem;
+            font-weight:600;
+            cursor:pointer;
+            text-decoration:none;
+            color:#111;
+        }
+        .action-btn:hover { background:#111; color:#fff; }
+
+        .muted { color:#666; margin-bottom:12px; display:block; }
+
+        @media (max-width:1100px) {
+            .page-wrap { padding:40px; }
+        }
+        @media (max-width:768px) {
+            .page-wrap { padding:24px; }
+            .form-row { flex-direction:column; gap:10px; }
+        }
+    </style>
+</head>
+
+<body>
+
+<div th:replace="fragments/header :: header"></div>
+
+<div class="page-wrap">
+
+    <h3 class="page-title"
+        th:text="${candidate.id != null} ? 'Edit Candidate' : 'Add Candidate Manually'">
+        Add Candidate
+    </h3>
+
+    <p class="muted" th:if="${candidate.id == null}">
+        This form is for registering applicants manually (walk-ins, referrals, email CVs).
+    </p>
+
+    <div class="form-card">
+        <form th:action="${candidate.id != null} ? @{/candidates/update} : @{/candidates}"
+              method="post">
+
+            <!-- ID for edit -->
+            <input type="hidden" name="id"
+                   th:if="${candidate.id != null}"
+                   th:value="${candidate.id}" />
+
+            <!-- Requisition + Status -->
+            <div class="form-row">
+                <div class="form-col" style="flex:0 0 280px;">
+                    <label>Position (optional)</label>
+                    <select name="requisitionId" class="select-input">
+                        <option value="">(optional)</option>
+
+                        <option th:each="r : ${requisitions}"
+                                th:value="${r.id}"
+                                th:text="${r.title}"
+                                th:selected="${candidate.requisition != null and r.id == candidate.requisition.id}">
+                        </option>
+                    </select>
+                </div>
+
+                <div style="flex:1"></div>
+
+                <div style="flex:0 0 220px;">
+                    <label>Status</label>
+                    <select name="status" class="select-input">
+                        <option value="applied"
+                                th:selected="${candidate.status == null or candidate.status == 'applied'}">applied</option>
+                        <option value="screened" th:selected="${candidate.status == 'screened'}">screened</option>
+                        <option value="interview" th:selected="${candidate.status == 'interview'}">interview</option>
+                        <option value="hired" th:selected="${candidate.status == 'hired'}">hired</option>
+                        <option value="rejected" th:selected="${candidate.status == 'rejected'}">rejected</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Name + Email -->
+            <div class="form-row">
+                <div class="form-col">
+                    <label>Name</label>
+                    <input name="name" class="text-input"
+                           th:value="${candidate.name}" required />
+                </div>
+
+                <div class="form-col">
+                    <label>Email</label>
+                    <input name="email" class="text-input"
+                           th:value="${candidate.email}" />
+                </div>
+            </div>
+
+            <!-- Phone + Resume -->
+            <div class="form-row">
+                <div class="form-col" style="flex:0 0 300px;">
+                    <label>Phone</label>
+                    <input name="phone" class="text-input"
+                           th:value="${candidate.phone}" />
+                </div>
+
+                <div class="form-col">
+                    <label>Resume URL</label>
+                    <input name="resumeUrl" class="text-input"
+                           th:value="${candidate.resumeUrl}"
+                           placeholder="https://..." />
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div style="margin-top:14px; display:flex; gap:12px;">
+                <button type="submit" class="action-btn"
+                        th:text="${candidate.id != null} ? 'Update' : 'Save'">
+                    Save
+                </button>
+                <a class="action-btn" th:href="@{/candidates}">Cancel</a>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+</body>
+</html>

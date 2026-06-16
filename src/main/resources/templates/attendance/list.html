@@ -1,0 +1,235 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8"/>
+    <title>Attendance — HRMS</title>
+
+    <!-- Bootstrap (your existing local file) -->
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}"/>
+
+    <!-- Puritan font (Google Fonts) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Puritan:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* page + font reset */
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: "Puritan", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: #fff;
+            color: #111;
+            box-sizing: border-box;
+        }
+        *, *::before, *::after { box-sizing: inherit; }
+
+        /* page wrapper padding (match employees page) */
+        .page-wrap { padding: 24px 150px; box-sizing: border-box; }
+
+        /* top row */
+        .top-row { display:flex; justify-content:space-between; align-items:center; gap:16px; margin:14px 0 12px; }
+        .page-title { margin:0; font-size:24px; font-weight:700; letter-spacing:0.3px; }
+
+        /* action buttons (white with black border) */
+        .action-btn {
+            display:inline-block;
+            background: #fff;
+            color: #111;
+            border: 2px solid #111;
+            border-radius: 8px;
+            padding: .375rem .7rem;
+            font-weight:600;
+            text-decoration:none;
+            font-size:0.92rem;
+            line-height:1;
+            cursor:pointer;
+        }
+        .action-btn:hover { background:#111; color:#fff; text-decoration:none; }
+        .action-btn-sm { padding:.25rem .5rem; font-size:0.88rem; border-radius:8px; }
+
+        /* small controls (date + go) */
+        .controls { display:flex; gap:12px; align-items:center; margin-top:8px; }
+        .controls label { font-weight:600; margin-right:6px; }
+
+        .date-input {
+            padding:.45rem .6rem;
+            border-radius:8px;
+            border:1px solid #d6d6d6;
+            font-size:0.95rem;
+            box-shadow:none;
+            outline:none;
+            background:#fff;
+        }
+
+        /* Table area */
+        .table-container { overflow-x:auto; padding-top:12px; }
+
+        .emp-table {
+            width:100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            table-layout: fixed;
+            font-size: 1.04rem;
+        }
+
+        /* Header: single border rectangle with 8px radius */
+        .emp-table thead th {
+            background: #fff;
+            padding: 12px 6px;
+            font-weight:700;
+            text-align: left;
+            border:none;
+            vertical-align: middle;
+            box-sizing: border-box;
+        }
+        .emp-table thead th {
+            border-top: 2px solid #000;
+            border-bottom: 2px solid #000;
+        }
+        .emp-table thead th:first-child {
+            border-left: 2px solid #000;
+            border-top-left-radius: 8px;
+            border-bottom-left-radius: 8px;
+        }
+        .emp-table thead th:last-child {
+            border-right: 2px solid #000;
+            border-top-right-radius: 8px;
+            border-bottom-right-radius: 8px;
+        }
+
+        /* small spacer under header row */
+        .emp-table thead + tbody .header-spacer td {
+            height: 12px;
+            padding: 0;
+            background: transparent;
+            border: none;
+        }
+
+        /* Data rows: alternating bands (match employees) */
+        .emp-table tbody tr.row-odd td { background:#ffffff; }
+        .emp-table tbody tr.row-even td { background:#f5f5f5; }
+
+        .emp-table tbody td {
+            padding:13px 6px;
+            vertical-align: middle;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            border: none;
+            font-size:1.04rem;
+            box-sizing:border-box;
+        }
+
+        .emp-table td.actions { width:1%; white-space:nowrap; }
+
+        .table-action-btn {
+            display:inline-block;
+            background:#fff;
+            border:2px solid #111;
+            color:#111;
+            border-radius:8px;
+            padding:.28rem .5rem;
+            font-weight:600;
+            font-size:0.88rem;
+            text-decoration:none;
+            cursor:pointer;
+            line-height:1;
+        }
+        .table-action-btn:hover { background:#111; color:#fff; }
+
+        /* subtle hover */
+        .emp-table tbody tr:hover td { filter: brightness(0.995); }
+
+        /* responsive tweaks */
+        @media (max-width: 1100px) {
+            .page-wrap { padding-left:40px; padding-right:40px; }
+        }
+        @media (max-width: 768px) {
+            .page-wrap { padding-left:24px; padding-right:24px; }
+            .top-row { flex-direction:column; align-items:flex-start; gap:12px; }
+            .emp-table thead { display:none; }
+            .emp-table, .emp-table tbody, .emp-table tr, .emp-table td { display:block; width:100%; }
+            .emp-table tr { margin-bottom:10px; }
+            .emp-table td { white-space:normal; padding:10px; }
+            .emp-table td.actions { text-align:left; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- header fragment (unchanged) -->
+<div th:replace="fragments/header :: header"></div>
+
+<div class="page-wrap">
+
+    <div class="top-row">
+        <div>
+            <h3 class="page-title">Attendance for <span th:text="${date}">DATE</span></h3>
+
+            <div class="controls" style="margin-top:10px;">
+                <label for="date">Date:</label>
+                <form th:action="@{/attendance}" method="get" style="display:inline-flex; gap:8px; align-items:center;">
+                    <input id="date" name="date" type="date" class="date-input" th:value="${date}" />
+                    <button class="action-btn action-btn-sm" type="submit">Go</button>
+                </form>
+            </div>
+        </div>
+
+        <div style="display:flex; gap:12px; align-items:center;">
+            <a class="action-btn" th:href="@{/attendance/new}">Mark Individual</a>
+            <a class="action-btn" th:href="@{/attendance/bulk}">Bulk Mark</a>
+            <a class="action-btn" th:href="@{|/attendance/export/excel?date=${date}|}">Export Excel</a>
+            <a class="action-btn" th:href="@{|/attendance/export/pdf?date=${date}|}">Export PDF</a>
+        </div>
+    </div>
+
+    <div class="table-container">
+        <table class="emp-table" role="table" aria-label="Attendance">
+            <thead>
+            <tr>
+                <th style="width:48px">ID</th>
+                <th>Employee</th>
+                <th style="width:120px">Date</th>
+                <th style="width:100px">Status</th>
+                <th>Reason</th>
+                <th style="width:110px">Recorded By</th>
+                <th style="width:170px">Recorded At</th>
+                <th style="width:140px">Actions</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <!-- spacer row for small gap -->
+            <tr class="header-spacer"><td colspan="8"></td></tr>
+
+            <!-- data rows: apply alternating classes using Thymeleaf index -->
+            <tr th:each="a,iterStat : ${attendanceList}"
+                th:class="${iterStat.index % 2 == 0} ? 'row-odd' : 'row-even'">
+                <td th:text="${a.id}">1</td>
+                <td th:text="${employeeNames[a.employeeId]}">Employee Name</td>
+                <td th:text="${a.date}">2025-01-01</td>
+                <td th:text="${a.status}">present</td>
+                <td th:text="${a.reason}">-</td>
+                <td th:text="${a.recordedBy}">1</td>
+                <td th:text="${a.recordedAt}">2025-01-01T10:00</td>
+
+                <td class="actions">
+                    <a th:href="@{|/attendance/edit/${a.id}|}" class="table-action-btn">Edit</a>
+
+                    <form th:action="@{|/attendance/delete/${a.id}|}" method="post"
+                          th:onsubmit="return confirm('Delete this attendance record?');" style="display:inline">
+                        <button class="table-action-btn" type="submit" style="margin-left:8px">Delete</button>
+                    </form>
+                </td>
+            </tr>
+
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+</body>
+</html>

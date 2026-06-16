@@ -1,0 +1,272 @@
+<!-- src/main/resources/templates/index.html -->
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8"/>
+    <title>HRMS — Dashboard</title>
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}"/>
+
+    <!-- Puritan font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Puritan:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <!-- Material icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <style>
+        :root{
+            --bg: #ffffff;
+            --text: #111111;
+            --muted: #6c6c6c;
+            --card-border: #f0f0f0;
+            --h-padding: 150px;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Puritan', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            -webkit-font-smoothing:antialiased;
+            -moz-osx-font-smoothing:grayscale;
+            margin: 0;
+        }
+
+        /* page wrapper: 60px horizontal padding + optional max-width */
+        .page-wrapper {
+            padding-left: var(--h-padding);
+            padding-right: var(--h-padding);
+            padding-top: 30px;
+            max-width: 1400px; /* optional */
+            margin: 0 auto;
+            box-sizing: border-box;
+        }
+
+        .app-container {
+            padding-bottom: 40px;
+        }
+
+        /* Page header */
+        .dashboard-header {
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            margin-bottom:1.25rem;
+            gap: 1rem;
+        }
+        .dashboard-title {
+            font-family: 'Puritan', sans-serif;
+            font-size: 45px;
+            margin: 0;
+            letter-spacing: 0.5px;
+            font-weight: 700;
+        }
+        .dashboard-sub {
+            color: var(--muted);
+            margin: 0;
+            font-size: 1.3rem;
+            font-weight: 400;
+        }
+
+        /* Card grid (3 per row) */
+        .dash-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.25rem;
+            align-items: start;
+        }
+
+        /* individual card */
+        .dash-card {
+            background: #fff;
+            border-radius: 10px;
+            border: 2px solid #000;
+            padding: 1.15rem;
+            box-sizing: border-box;
+            min-height: 120px;
+            display:flex;
+            flex-direction:column;
+            justify-content:space-between;
+        }
+
+        .dash-card .top {
+            display:flex;
+            align-items:center;
+            gap:12px;
+        }
+
+        .dash-icon {
+            width:44px;
+            height:44px;
+            border-radius:8px;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            font-size:20px;
+            color: var(--text);
+            background: transparent;
+        }
+
+        .dash-title {
+            font-weight:700;
+            font-size:1.5rem;
+            margin:0;
+        }
+
+        .dash-desc {
+            margin: 0.45rem 0 0;
+            color: var(--muted);
+            font-size:1.05rem;
+            font-weight: 400;
+        }
+
+        .dash-footer {
+            margin-top: 0.85rem;
+        }
+
+        .dash-link {
+            font-size:0.95rem;
+            color: var(--text);
+            text-decoration: none;
+            font-weight: 600;
+            border-bottom: 1px solid transparent;
+            padding-bottom: 2px;
+        }
+        .dash-link:hover {
+            text-decoration: none;
+            border-bottom: 1px solid #111;
+        }
+
+        /* responsive: 2 columns on tablet, 1 column on mobile */
+        @media (max-width: 992px) {
+            .dash-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 576px) {
+            .dash-grid { grid-template-columns: 1fr; }
+            .dashboard-title { font-size: 30px; text-align: left; }
+            .page-wrapper { padding-left: 18px; padding-right: 18px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- header (site-wide) -->
+<div th:replace="~{fragments/header :: header}"></div>
+
+<main class="app-container page-wrapper" role="main">
+    <div>
+
+        <div class="dashboard-header">
+            <div>
+                <h2 class="dashboard-title">Dashboard</h2>
+                <p class="dashboard-sub">Human Resource Management System.</p>
+            </div>
+        </div>
+
+        <section class="dash-grid" aria-label="Main dashboard">
+            <!-- Employees -->
+            <article class="dash-card" role="article" aria-labelledby="card-employees">
+                <div>
+                    <div class="top">
+                        <div class="dash-icon" aria-hidden="true">
+                            <span class="material-icons">people</span>
+                        </div>
+                        <div>
+                            <h3 id="card-employees" class="dash-title">Employees</h3>
+                            <p class="dash-desc">Manage employee records and profiles.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dash-footer">
+                    <a class="dash-link" th:href="@{/employees}">Open</a>
+                </div>
+            </article>
+
+            <!-- Attendance -->
+            <article class="dash-card" role="article" aria-labelledby="card-attendance">
+                <div>
+                    <div class="top">
+                        <div class="dash-icon" aria-hidden="true">
+                            <span class="material-icons">event_available</span>
+                        </div>
+                        <div>
+                            <h3 id="card-attendance" class="dash-title">Attendance</h3>
+                            <p class="dash-desc">Daily attendance tracking and reports.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dash-footer">
+                    <a class="dash-link" th:href="@{/attendance}">Open</a>
+                </div>
+            </article>
+
+            <!-- Payments -->
+            <article class="dash-card" role="article" aria-labelledby="card-payments">
+                <div>
+                    <div class="top">
+                        <div class="dash-icon" aria-hidden="true">
+                            <span class="material-icons">account_balance_wallet</span>
+                        </div>
+                        <div>
+                            <h3 id="card-payments" class="dash-title">Payments</h3>
+                            <p class="dash-desc">Salary payments, exports and history.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dash-footer">
+                    <a class="dash-link" th:href="@{/payments}">Open</a>
+                </div>
+            </article>
+
+            <!-- Candidates -->
+            <article class="dash-card" role="article" aria-labelledby="card-candidates">
+                <div>
+                    <div class="top">
+                        <div class="dash-icon" aria-hidden="true">
+                            <span class="material-icons">person_search</span>
+                        </div>
+                        <div>
+                            <h3 id="card-candidates" class="dash-title">Candidates</h3>
+                            <p class="dash-desc">Manage applicants, statuses and interviews.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dash-footer">
+                    <a class="dash-link" th:href="@{/candidates}">Open</a>
+                </div>
+            </article>
+
+            <!-- Requisitions -->
+            <article class="dash-card" role="article" aria-labelledby="card-requisitions">
+                <div>
+                    <div class="top">
+                        <div class="dash-icon" aria-hidden="true">
+                            <span class="material-icons">work</span>
+                        </div>
+                        <div>
+                            <h3 id="card-requisitions" class="dash-title">Requisitions</h3>
+                            <p class="dash-desc">Create and manage job openings.</p>
+                            <br>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dash-footer">
+                    <a class="dash-link" th:href="@{/requisitions}">Open</a>
+                </div>
+            </article>
+
+        </section>
+
+    </div>
+</main>
+
+<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>

@@ -1,0 +1,30 @@
+<!-- src/main/resources/templates/layout.html -->
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title th:replace="${pageTitle} ?: 'HRMS'">HRMS</title>
+
+    <!-- Bootstrap (local) -->
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}"/>
+    <!-- Custom tiny styles -->
+    <link rel="stylesheet" th:href="@{/css/styles.css}"/>
+</head>
+<body class="bg-light">
+
+<!-- header fragment -->
+<div th:replace="~{fragments/header :: header}"></div>
+
+<!-- main content -->
+<main class="app-container">
+    <div class="container">
+        <!-- Every page will set content fragment named "content" -->
+        <div th:replace="${content}"></div>
+    </div>
+</main>
+
+<!-- Bootstrap JS -->
+<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>

@@ -1,0 +1,56 @@
+/* src/main/resources/static/css/styles.css */
+
+/* Page wrapper */
+.app-container {
+  padding-top: 1.5rem;
+  padding-bottom: 2rem;
+  font-family: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* Make the navbar brand slightly larger */
+.navbar-brand {
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+
+/* Add subtle card shadows and consistent spacing */
+.card {
+  border-radius: 0.5rem;
+  box-shadow: 0 6px 18px rgba(13, 38, 59, 0.06);
+}
+
+/* Table tweaks */
+.table thead th {
+  border-bottom: 2px solid #e9ecef;
+  font-weight: 600;
+}
+.table tbody tr:hover {
+  background-color: #fbfdff;
+}
+
+/* Compact actions column for small buttons */
+.row-actions .btn {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.85rem;
+}
+
+/* Tiny helper for subtle muted text */
+.text-muted-small {
+  color: #6c757d;
+  font-size: 0.9rem;
+}
+
+/* Make the filter form inline and tidy on large screens */
+.filter-inline .form-control {
+  display: inline-block;
+  width: auto;
+  vertical-align: middle;
+}
+.filter-inline .btn {
+  vertical-align: middle;
+}
+
+/* Responsive container padding */
+@media (min-width: 992px) {
+  .app-container { padding-left: 4rem; padding-right: 4rem; }
+}

@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Bulk Attendance — HRMS</title>
+
+    <!-- Bootstrap (local) -->
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}"/>
+
+    <!-- Puritan font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Puritan:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* Base / font */
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: "Puritan", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: #fff;
+            color: #111;
+            box-sizing: border-box;
+        }
+        *, *::before, *::after { box-sizing: inherit; }
+
+        .page-wrap {
+            padding: 24px 400px;
+        }
+
+        /* Panel around the whole content area */
+        .panel {
+            background: #fff;
+            border: 1px solid #efefef;
+            border-radius: 10px;
+            padding: 22px;
+            box-shadow: 0 4px 18px rgba(10,10,10,0.03);
+        }
+
+        /* Title + top controls (Back button on top-right) */
+        .panel-header {
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            gap:12px;
+            margin-bottom: 14px;
+        }
+        .panel-title { font-size:22px; font-weight:700; margin:0; }
+
+        .top-controls {
+            display:flex;
+            gap:12px;
+            align-items:center;
+        }
+
+        .action-btn {
+            display:inline-block;
+            background: #fff;
+            color: #111;
+            border: 2px solid #111;
+            border-radius: 8px;
+            padding: .375rem .7rem;
+            font-weight:600;
+            text-decoration:none;
+            font-size:0.92rem;
+            line-height:1;
+            cursor:pointer;
+        }
+        .action-btn:hover { background:#111; color:#fff; text-decoration:none; }
+        .action-btn.primary {
+            background:#111; color:#fff; border-color:#111;
+        }
+
+        /* Table wrapper */
+        .table-wrap { margin-top: 6px; }
+
+        .att-table {
+            width:100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            table-layout: fixed;
+            font-size: 1rem;
+        }
+
+        /* header row: we'll create a single rectangle using top/bottom borders and left/right borders on first/last th,
+           and rounded corners on first/last */
+        .att-table thead th {
+            text-align: left;
+            padding: 12px 14px;
+            font-weight:700;
+            background: transparent;
+            border: none;
+            vertical-align: middle;
+            box-sizing: border-box;
+        }
+        .att-table thead th {
+            border-top: 2px solid #000;
+            border-bottom: 2px solid #000;
+        }
+        .att-table thead th:first-child {
+            border-left: 2px solid #000;
+            border-top-left-radius: 8px;
+            border-bottom-left-radius: 8px;
+        }
+        .att-table thead th:last-child {
+            border-right: 2px solid #000;
+            border-top-right-radius: 8px;
+            border-bottom-right-radius: 8px;
+        }
+
+        /* white spacer after header (explicit transparent/white area) */
+        .att-table thead + tbody .header-spacer td {
+            height: 12px;
+            padding: 0;
+            background: #ffffff; /* explicitly white */
+            border: none;
+        }
+
+        /* body rows: alternating bands (first data row white, second gray) — no gaps */
+        .att-table tbody tr.row-odd td { background: #ffffff; }
+        .att-table tbody tr.row-even td { background: #f6f6f6; }
+
+        .att-table tbody td {
+            padding: 16px 14px;
+            vertical-align: middle;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            border: none;
+            font-size: 1rem;
+        }
+
+        /* Align columns: employee column wide and radio columns narrow & centered */
+        .col-employee { width: 60%; }
+        .col-radio { width: 13%; text-align:center; }
+
+        /* Radio visual */
+        .att-radio { transform: scale(1.05); margin: 0; }
+
+        /* Highlight alternate band more softly (keeps spacer white) */
+        .att-table tbody tr.row-even td { /* gray band */ }
+
+        /* Save/Cancel area spacing */
+        .form-actions { margin-top: 18px; display:flex; gap:12px; align-items:center; }
+
+        /* Back button top-right (small) */
+        .back-btn { padding:.35rem .6rem; border-radius:8px; font-weight:600; }
+
+        /* Responsive: reduce padding at smaller widths */
+        @media (max-width: 1100px) {
+            .page-wrap { padding-left:40px; padding-right:40px; }
+            .col-employee { width: 58%; }
+            .col-radio { width: 14%; }
+        }
+        @media (max-width: 760px) {
+            .page-wrap { padding-left:20px; padding-right:20px; }
+            .col-employee { width: 55%; }
+            .col-radio { width: 15%; }
+            .att-table thead th, .att-table tbody td { font-size:0.95rem; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- header fragment (site header unchanged) -->
+<div th:replace="fragments/header :: header"></div>
+
+<div class="page-wrap">
+    <div class="panel">
+
+        <div class="panel-header">
+            <h2 class="panel-title">Bulk Attendance — <span th:text="${date}">DATE</span></h2>
+
+            <div class="top-controls">
+                <a th:href="@{/attendance}" class="action-btn back-btn">Back</a>
+            </div>
+        </div>
+
+        <div class="table-wrap">
+            <form id="bulkForm" method="post" th:action="@{/attendance/bulk}">
+                <input type="hidden" name="date" th:value="${date}"/>
+
+                <table class="att-table" role="table" aria-label="Bulk Attendance">
+                    <colgroup>
+                        <col class="col-employee">
+                        <col class="col-radio">
+                        <col class="col-radio">
+                        <col class="col-radio">
+                    </colgroup>
+
+                    <thead>
+                    <tr>
+                        <th>Employee</th>
+                        <th style="text-align:center">Present</th>
+                        <th style="text-align:center">Absent</th>
+                        <th style="text-align:center">Late</th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    <!-- white spacer below header -->
+                    <tr class="header-spacer"><td colspan="4"></td></tr>
+
+                    <!-- data rows: iterate employees, apply odd/even classes -->
+                    <tr th:each="e,iterStat : ${employees}"
+                        th:class="${iterStat.index % 2 == 0} ? 'row-odd' : 'row-even'">
+                        <td th:text="${e.name}">Employee</td>
+
+                        <td style="text-align:center">
+                            <input type="hidden" class="emp-id" th:value="${e.id}"/>
+                            <input type="radio"
+                                   th:name="${'status_' + e.id}"
+                                   value="present"
+                                   class="att-radio"
+                                   th:checked="${existing[e.id] != null ? existing[e.id].status == 'present' : true}"/>
+                        </td>
+
+                        <td style="text-align:center">
+                            <input type="radio"
+                                   th:name="${'status_' + e.id}"
+                                   value="absent"
+                                   class="att-radio"
+                                   th:checked="${existing[e.id] != null ? existing[e.id].status == 'absent' : false}"/>
+                        </td>
+
+                        <td style="text-align:center">
+                            <input type="radio"
+                                   th:name="${'status_' + e.id}"
+                                   value="late"
+                                   class="att-radio"
+                                   th:checked="${existing[e.id] != null ? existing[e.id].status == 'late' : false}"/>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+
+                <div class="form-actions">
+                    <button type="button" class="action-btn primary" onclick="submitBulk()">Save All</button>
+                    <a class="action-btn" th:href="@{/attendance}">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    /**
+     * Build arrays of employeeId / status and append as hidden inputs,
+     * then submit the form. Avoids name collision and keeps server expectations.
+     */
+    function submitBulk() {
+        const rows = document.querySelectorAll('.att-table tbody tr:not(.header-spacer)');
+        const form = document.getElementById('bulkForm');
+
+        // remove previously added dynamic inputs (if any)
+        Array.from(form.querySelectorAll('input[name="employeeId"], input[name="status"]')).forEach(el => el.remove());
+
+        rows.forEach(row => {
+            const idEl = row.querySelector('.emp-id');
+            const empId = idEl ? idEl.value : null;
+            if (!empId) return;
+
+            // radio group by generated name
+            const radios = row.querySelectorAll('input[type="radio"][name="status_' + empId + '"]');
+            let picked = 'present'; // default
+            radios.forEach(r => { if (r.checked) picked = r.value; });
+
+            // append hidden inputs (multiple employeeId/status pairs)
+            const iId = document.createElement('input'); iId.type='hidden'; iId.name='employeeId'; iId.value = empId; form.appendChild(iId);
+            const iStatus = document.createElement('input'); iStatus.type='hidden'; iStatus.name='status'; iStatus.value = picked; form.appendChild(iStatus);
+        });
+
+        form.submit();
+    }
+</script>
+</body>
+</html>

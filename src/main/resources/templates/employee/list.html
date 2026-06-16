@@ -1,0 +1,256 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8"/>
+    <title>Employees</title>
+
+    <!-- Bootstrap (your existing local file) -->
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}"/>
+
+    <!-- Puritan font (Google Fonts) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Puritan:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* Reset default page margin (fix gap above navbar) */
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: "Puritan", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: #fff;
+            color: #111;
+        }
+
+        /* page wrapper with custom left/right padding (kept as you currently have) */
+        .page-wrap {
+            padding: 24px 150px;
+            box-sizing: border-box;
+        }
+
+        /* header / top controls */
+        .top-row {
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            gap: 16px;
+            margin: 14px 0 10px 0;
+        }
+        .page-title { margin:0; font-size:24px; font-weight:700; letter-spacing:0.3px; }
+
+        /* action buttons style (rounded white button with black border) */
+        .action-btn {
+            display:inline-block;
+            background: #fff;
+            color: #111;
+            border: 2px solid #111;
+            border-radius: 8px;
+            padding: .375rem .7rem;
+            font-weight:600;
+            text-decoration:none;
+            font-size:0.92rem;
+            line-height:1;
+            cursor:pointer;
+        }
+        .action-btn:hover { background:#111; color:#fff; text-decoration:none; }
+
+        .action-btn-sm {
+            padding: .25rem .5rem;
+            font-size:0.88rem;
+            border-radius:8px;
+        }
+
+        /* Search form styling */
+        .search-form {
+            display:flex;
+            gap:8px;
+            align-items:center;
+            margin-top:8px;
+        }
+        .search-input {
+            padding: .45rem .6rem;
+            border-radius: 8px;
+            border: 1px solid #d6d6d6;
+            min-width: 360px;
+            box-shadow: none;
+            outline: none;
+            font-size: 0.95rem;
+        }
+        .search-input:focus { border-color:#999; box-shadow:none; }
+
+        /* Table area */
+        .table-container {
+            overflow-x:auto;
+            padding-top:12px;
+        }
+
+        /* table base - no gaps between data rows */
+        .emp-table {
+            width:100%;
+            border-collapse: separate;
+            border-spacing: 0;         /* important: no gaps between data rows */
+            table-layout: fixed;
+            font-size: 1.04rem;
+        }
+
+        /* HEADER: make a single rectangle border around header row */
+        .emp-table thead th {
+            background: #fff;
+            padding: 12px 12px;
+            font-weight:700;
+            text-align: left;
+            border: none;             /* remove per-cell borders */
+            vertical-align: middle;
+            box-sizing: border-box;
+        }
+
+        /* Draw top and bottom border across the row AND left/right side on first/last cells */
+        .emp-table thead th {
+            border-top: 2px solid #000;
+            border-bottom: 2px solid #000;
+        }
+        .emp-table thead th:first-child {
+            border-left: 2px solid #000;
+            border-top-left-radius: 8px;
+            border-bottom-left-radius: 8px;
+        }
+        .emp-table thead th:last-child {
+            border-right: 2px solid #000;
+            border-top-right-radius: 8px;
+            border-bottom-right-radius: 8px;
+        }
+
+        /* small gap under header row (12px) */
+        .emp-table thead + tbody .header-spacer td {
+            height: 12px;
+            padding: 0;
+            background: transparent;
+            border: none;
+        }
+
+        /* DATA ROWS: alternating white/gray bands with no gaps */
+        .emp-table tbody tr.row-odd td {
+            background: #ffffff;
+        }
+        .emp-table tbody tr.row-even td {
+            background: #f5f5f5;
+        }
+
+        .emp-table tbody td {
+            padding: 13px 10px;
+            vertical-align: middle;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            border: none;
+            box-sizing: border-box;
+        }
+
+        /* keep nice rounding at table edges only for header - data rows are full width bands */
+        .emp-table tbody tr.row-odd:first-child td:first-child {
+            /* If you want the first data row to have rounded corners, uncomment:
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+            */
+        }
+
+        /* Actions column */
+        .emp-table td.actions { width:1%; white-space:nowrap; }
+
+        .action-btn-inline { margin-left:8px; }
+
+        /* small hover subtle */
+        .emp-table tbody tr:hover td { filter: brightness(0.995); }
+
+        /* Responsive tweaks */
+        @media (max-width: 992px) {
+            .page-wrap { padding-left:32px; padding-right:32px; }
+            .search-input { min-width:240px; }
+        }
+        @media (max-width: 576px) {
+            .page-wrap { padding-left:18px; padding-right:18px; }
+            .search-input { min-width:120px; width:100%; }
+            .top-row { flex-direction: column; align-items:flex-start; gap:12px; }
+            .emp-table thead th, .emp-table tbody td { white-space:normal; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- header fragment (unchanged) -->
+<div th:replace="fragments/header :: header"></div>
+
+<div class="page-wrap">
+
+    <div class="top-row">
+        <h3 class="page-title">Employees</h3>
+
+        <div style="display:flex; gap:12px; align-items:center;">
+            <!-- 'Add New' (was 'New') -->
+            <a class="action-btn" th:href="@{/employees/new}">Add New</a>
+
+            <!-- Exports -->
+            <a class="action-btn" th:href="@{/employees/export/excel}">Export Excel</a>
+            <a class="action-btn" th:href="@{/employees/export/pdf}">Export PDF</a>
+        </div>
+    </div>
+
+    <!-- search -->
+    <form method="get" th:action="@{/employees}" class="search-form" style="margin-bottom:12px;">
+        <input type="text" name="keyword" class="search-input"
+               placeholder="Search by name, email, phone, code"
+               th:value="${keyword}">
+        <button type="submit" class="action-btn action-btn-sm">Search</button>
+    </form>
+
+    <div class="table-container">
+        <table class="emp-table">
+            <thead>
+            <tr>
+                <th style="width:48px">ID</th>
+                <th style="width:120px">Code</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th style="width:140px">Phone</th>
+                <th style="width:140px">Position</th>
+                <th style="width:120px">Hire Date</th>
+                <th style="width:110px">Salary</th>
+                <th style="width:140px">Actions</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <!-- spacer row to create gap below header -->
+            <tr class="header-spacer"><td colspan="9"></td></tr>
+
+            <!-- data rows: we add odd/even classes using Thymeleaf iteration index -->
+            <tr th:each="e, iterStat : ${employees}"
+                th:class="${iterStat.index % 2 == 0} ? 'row-odd' : 'row-even'">
+                <td th:text="${e.id}">1</td>
+                <td th:text="${e.empCode}">EMP001</td>
+                <td th:text="${e.name}">Md. Karim</td>
+                <td th:text="${e.email}">karim@example.com</td>
+                <td th:text="${e.phone}">01711111111</td>
+                <td th:text="${e.position}">Junior Developer</td>
+                <td th:text="${e.hireDate}">2024-08-01</td>
+                <td th:text="${e.salary}">30000.00</td>
+
+                <td class="actions">
+                    <a th:href="@{|/employees/edit/${e.id}|}" class="action-btn action-btn-sm">Edit</a>
+
+                    <form th:action="@{|/employees/delete/${e.id}|}" method="post"
+                          th:onsubmit="return confirm('Delete this employee?');" style="display:inline">
+                        <button class="action-btn action-btn-sm" type="submit" style="margin-left:8px">Delete</button>
+                    </form>
+                </td>
+            </tr>
+
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+</body>
+</html>

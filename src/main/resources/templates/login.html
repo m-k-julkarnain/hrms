@@ -1,0 +1,159 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>HR LOGIN</title>
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}" />
+
+    <!-- P U R I T A N  font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Puritan:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <!-- Material icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <style>
+        :root{
+          --bg: #ffffff;
+          --card-bg: #ffffff;
+          --accent: #000000;
+          --muted: #7a7a7a;
+          --input-border: #d6d6d6;
+        }
+
+        html,body{
+          height:100%;
+          background:var(--bg);
+          font-family: "Puritan", sans-serif;
+          -webkit-font-smoothing:antialiased;
+        }
+
+        .login-root{
+          min-height:100%;
+          display:flex;
+          align-items:center;
+          justify-content:center;
+          padding: 2rem;
+        }
+
+        .login-card{
+          width:100%;
+          max-width:360px;
+          border-radius:10px;
+          background:var(--card-bg);
+          box-shadow:none;
+          padding:26px 26px;
+          box-sizing:border-box;
+          transform: translateY(-14vh);
+        }
+
+        /* H E A D I N G */
+        .hr-title{
+          font-size:30px;
+          font-weight:900;
+          color:var(--accent);
+          text-align:center;
+          margin-bottom:24px;
+          letter-spacing:0.7px;
+        }
+
+        /* Inputs */
+        .form-control {
+          width:100%;
+          height:46px;
+          padding-left:44px;
+          border-radius:8px;
+          border: 2px solid #000;
+          background:#fff;
+          font-size:1rem;
+        }
+
+        .input-icon {
+          position:relative;
+          margin-bottom:14px;
+          display:block;
+        }
+        .input-icon .material-icons {
+          position:absolute;
+          left:12px;
+          top:50%;
+          transform:translateY(-50%);
+          font-size:20px;
+          color:var(--muted);
+        }
+
+        /* ⬛ NEW BUTTON STYLE – matches HRMS outline button */
+        .btn-login {
+          background:#111;
+          color:#fff;
+          border:2px solid #111;
+          padding: 8px 22px;
+          font-weight:700;
+          border-radius:10px;
+          font-size:1rem;
+          letter-spacing:0.4px;
+          transition:0.15s;
+        }
+        .btn-login:hover {
+          background:#fff;
+          color:#111;
+        }
+
+        /* inline alert */
+        .alert-custom {
+          background: #fff5f5;
+          border: 1px solid #f1c1c1;
+          color: #8a1f1f;
+          padding: 9px 10px;
+          border-radius: 8px;
+          margin-bottom: 12px;
+          font-size:0.95rem;
+        }
+
+        /* Responsive */
+        @media (max-width:420px){
+          .login-card { padding:20px; transform: translateY(-4vh); }
+          .hr-title { font-size:26px; margin-bottom:18px; }
+          .btn-login { width:100%; text-align:center; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="login-root">
+    <div class="login-card" role="main" aria-labelledby="loginHeading">
+
+        <h1 id="loginHeading" class="hr-title">HR LOGIN</h1>
+
+        <div th:if="${error}" class="alert-custom" th:text="${error}"></div>
+
+        <form th:action="@{/login}" method="post" novalidate>
+
+            <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+            <div class="input-icon">
+                <span class="material-icons">person</span>
+                <input id="username" name="username" type="text" class="form-control"
+                       placeholder="Username" required autofocus />
+            </div>
+
+            <div class="input-icon">
+                <span class="material-icons">lock</span>
+                <input id="password" name="password" type="password" class="form-control"
+                       placeholder="Password" required />
+            </div>
+
+            <div class="d-flex align-items-center" style="gap:10px;">
+                <button type="submit" class="btn-login">Login</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>
