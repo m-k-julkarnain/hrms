@@ -76,78 +76,25 @@
 
 ## 🏗 Database Architecture & ER Diagram
 
-The database schema is normalized to **3NF** with strict referential integrity constraints.
+> **Faculty-Reviewed ER Design:** The Entity-Relationship (ER) diagram below represents the system's conceptual and relational data architecture using Chen's notation. It has been verified and approved as part of the Database Management Systems (DBMS) curriculum.
 
-```mermaid
-erDiagram
-    HR_USER ||--o{ EMPLOYEE : "creates/manages"
-    HR_USER ||--o{ REQUISITION : "creates"
-    HR_USER ||--o{ ATTENDANCE : "records"
-    HR_USER ||--o{ PAYMENT : "disburses"
-    EMPLOYEE ||--o{ ATTENDANCE : "has"
-    EMPLOYEE ||--o{ PAYMENT : "receives"
-    REQUISITION ||--o{ CANDIDATE : "receives applications"
+<div align="center">
+  <a href="docs/erd-hrms.pdf" target="_blank">
+    <img src="docs/erd-diagram.png" alt="HRMS Faculty Reviewed Entity Relationship Diagram" width="850"/>
+  </a>
+  <p><em>Official HRMS Entity-Relationship (ER) Conceptual Design (Chen's Notation)</em></p>
+  <p>
+    <a href="docs/erd-hrms.pdf"><strong>📄 Download / View High-Resolution Vector PDF</strong></a>
+  </p>
+</div>
 
-    HR_USER {
-        int h_id PK
-        string username UK
-        string password
-        string full_name
-    }
-
-    EMPLOYEE {
-        int e_id PK
-        string emp_code UK
-        string name
-        string email
-        string phone
-        string position
-        date hire_date
-        decimal salary
-        int h_id FK
-        datetime creation_time
-    }
-
-    REQUISITION {
-        int r_id PK
-        string title
-        text description
-        int h_id FK
-        datetime creation_time
-    }
-
-    CANDIDATE {
-        int c_id PK
-        int requisition_id FK
-        string name
-        string email
-        string phone
-        string resume_url
-        string status
-        datetime creation_time
-    }
-
-    ATTENDANCE {
-        int a_id PK
-        int employee_id FK
-        date date
-        string status
-        string reason
-        int h_id FK
-        datetime record_time
-    }
-
-    PAYMENT {
-        int p_id PK
-        int employee_id FK
-        decimal amount
-        datetime payment_date
-        string method
-        string remarks
-        int h_id FK
-        datetime creation_time
-    }
-```
+### Relational Schema Summary
+- **`hr_user`** (`h_id` [PK], `username`, `password`, `full_name`)
+- **`employee`** (`e_id` [PK], `emp_code`, `name`, `email`, `phone`, `position`, `hire_date`, `salary`, `creation_time`, `h_id` [FK])
+- **`requisition`** (`r_id` [PK], `title`, `description`, `h_id` [FK], `creation_time`)
+- **`candidate`** (`c_id` [PK], `requisition_id` [FK], `name`, `email`, `phone`, `resume_url`, `status`, `position`, `creation_time`)
+- **`attendance`** (`a_id` [PK], `employee_id` [FK], `h_id` [FK], `date`, `status`, `reason`, `record_time`)
+- **`payment`** (`p_id` [PK], `employee_id` [FK], `h_id` [FK], `amount`, `payment_date`, `method`, `remarks`, `creation_time`)
 
 ---
 
