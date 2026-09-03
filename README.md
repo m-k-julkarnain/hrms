@@ -4,16 +4,27 @@
 
 **A comprehensive, database-driven web application built with Spring Boot, Thymeleaf, and MySQL for enterprise workforce and talent lifecycle management.**
 
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-Online%20on%20Render-success?style=for-the-badge&logo=render&logoColor=white)](https://hrms-1-w7ao.onrender.com/)
 [![Java](https://img.shields.io/badge/Java-21%20LTS-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white)](https://www.oracle.com/java/)
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-4.0-6DB33F?style=for-the-badge&logo=springboot&logoColor=white)](https://spring.io/projects/spring-boot)
 [![MySQL](https://img.shields.io/badge/MySQL-8.0-4479A1?style=for-the-badge&logo=mysql&logoColor=white)](https://www.mysql.com/)
 [![Thymeleaf](https://img.shields.io/badge/Thymeleaf-3.1-005F0F?style=for-the-badge&logo=thymeleaf&logoColor=white)](https://www.thymeleaf.org/)
 [![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://www.docker.com/)
-[![Render](https://img.shields.io/badge/Deploy%20to-Render-46E3B7?style=for-the-badge&logo=render&logoColor=white)](https://render.com)
 
-[Live Demo](#-deploying-live-on-render-free) • [Key Features](#-core-features--modules) • [Database Architecture](#-database-architecture--er-diagram) • [Quick Start](#-quick-start--local-setup) • [Cloud Deployment](#-deploying-live-on-render-free)
+🔗 **[🌐 View Live Application](https://hrms-1-w7ao.onrender.com/)** • [Key Features](#-core-features--modules) • [Database Architecture](#-database-architecture--er-diagram) • [Quick Start](#-quick-start--local-setup) • [Cloud Deployment](#-deploying-live-on-render-free)
 
 </div>
+
+---
+
+## 🌐 Live Demo
+
+The application is deployed live and running on Render:
+👉 **[https://hrms-1-w7ao.onrender.com/](https://hrms-1-w7ao.onrender.com/)**
+
+| Role | Demo Username | Demo Password |
+| :--- | :--- | :--- |
+| **HR Administrator** | `admin` | `password123` |
 
 ---
 
